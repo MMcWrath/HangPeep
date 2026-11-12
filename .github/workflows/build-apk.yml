@@ -1,0 +1,69 @@
+name: Build APK
+
+on:
+  push:
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # to publish the APK as a GitHub Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Check the built-in word list matches data/pippas_power_words.csv
+        run: |
+          node tools/sync-words.mjs
+          git diff --exit-code web/words.js
+
+      # Every build must be signed with the same key, or Android won't install an update
+      # over the previous version (and uninstalling would erase Pippa's progress).
+      # Store the key once as the HP_KEYSTORE_B64 repository secret (base64 of the .jks).
+      # Without it, a temporary key is made for this build only.
+      - name: Prepare signing key
+        env:
+          HP_KEYSTORE_B64: ${{ secrets.HP_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$HP_KEYSTORE_B64" ]; then
+            echo "$HP_KEYSTORE_B64" | base64 -d > android/app/hangpeeps-sideload.jks
+          else
+            echo "::warning::HP_KEYSTORE_B64 secret not set; signing with a temporary key. Updates from later builds will not install over this one."
+            keytool -genkeypair -keystore android/app/hangpeeps-sideload.jks -storepass hangpeeps -keypass hangpeeps \
+              -alias hangpeeps -keyalg RSA -keysize 2048 -validity 36500 -dname "CN=HangPeeps"
+          fi
+
+      - name: Build signed release APK
+        working-directory: android
+        env:
+          HP_STORE_PASSWORD: ${{ secrets.HP_STORE_PASSWORD }}
+          HP_KEY_PASSWORD: ${{ secrets.HP_KEY_PASSWORD }}
+        run: gradle --no-daemon assembleRelease -PversionCode=${{ github.run_number }}
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk HangPeeps.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HangPeeps-apk
+          path: HangPeeps.apk
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" HangPeeps.apk \
+            --target "${{ github.sha }}" \
+            --title "HangPeeps 1.0.${{ github.run_number }}" \
+            --notes "Built from ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}. Download HangPeeps.apk on the tablet and open it to install."

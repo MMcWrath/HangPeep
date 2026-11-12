@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Peep holding three balloons, kept inside the 66dp safe zone of a 108dp adaptive icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#7A8798" android:strokeWidth="0.8" android:fillColor="#00000000"
+        android:pathData="M54,53 L40,39 M54,53 L54,35 M54,53 L68,39" />
+    <path android:fillColor="#FF6B6B" android:pathData="M34,32 a6,7.5 0 1,0 12,0 a6,7.5 0 1,0 -12,0 Z" />
+    <path android:fillColor="#4D96FF" android:pathData="M48,28 a6,7.5 0 1,0 12,0 a6,7.5 0 1,0 -12,0 Z" />
+    <path android:fillColor="#6BCB77" android:pathData="M62,32 a6,7.5 0 1,0 12,0 a6,7.5 0 1,0 -12,0 Z" />
+    <path android:fillColor="#F29A2E" android:pathData="M45,79 h7 v2.5 h-7 Z M56,79 h7 v2.5 h-7 Z" />
+    <path android:fillColor="#FFD84D" android:pathData="M39,66 a15,14 0 1,0 30,0 a15,14 0 1,0 -30,0 Z" />
+    <path android:fillColor="#FFE98F" android:pathData="M44,70 a10,8 0 1,0 20,0 a10,8 0 1,0 -20,0 Z" />
+    <path android:fillColor="#23324A" android:pathData="M46.4,62 a2.6,2.6 0 1,0 5.2,0 a2.6,2.6 0 1,0 -5.2,0 Z M56.4,62 a2.6,2.6 0 1,0 5.2,0 a2.6,2.6 0 1,0 -5.2,0 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M49.0,61.2 a0.9,0.9 0 1,0 1.8,0 a0.9,0.9 0 1,0 -1.8,0 Z M59.0,61.2 a0.9,0.9 0 1,0 1.8,0 a0.9,0.9 0 1,0 -1.8,0 Z" />
+    <path android:fillColor="#F29A2E" android:pathData="M51.5,65 L56.5,65 L54,68.5 Z" />
+</vector>

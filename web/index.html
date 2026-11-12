@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>HangPeeps</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen active" aria-label="Home">
+    <div class="home-wrap">
+      <div class="home-hero">
+        <svg class="hero-peep" viewBox="-120 -230 240 290" aria-hidden="true" id="hero-svg"></svg>
+        <div>
+          <h1>HangPeeps</h1>
+          <p class="tagline">Guess the word before Peep's balloons all pop!</p>
+          <p class="stars" id="home-stars"></p>
+        </div>
+      </div>
+      <div class="mode-grid" id="mode-grid"></div>
+      <button class="link-btn" id="btn-parent" type="button">Grown-ups</button>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="screen-game" class="screen" aria-label="Game">
+    <header class="game-top">
+      <button class="icon-btn" id="btn-home" type="button" aria-label="Home">&#x2302;</button>
+      <span class="mode-label" id="mode-label"></span>
+      <button class="icon-btn" id="btn-say" type="button" aria-label="Hear the word" hidden>&#x1F50A;</button>
+    </header>
+    <div class="game-body">
+      <div class="scene-wrap">
+        <svg id="scene" viewBox="0 0 400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true"></svg>
+        <div class="balloon-count" id="balloon-count"></div>
+      </div>
+      <div class="play-area">
+        <div class="word" id="word" aria-live="polite"></div>
+        <div class="wrong" id="wrong" aria-label="Letters not in the word"></div>
+        <div class="keyboard" id="keyboard"></div>
+      </div>
+    </div>
+
+    <div class="result" id="result" hidden>
+      <div class="result-card">
+        <h2 id="result-title"></h2>
+        <div class="result-word" id="result-word"></div>
+        <p id="result-msg"></p>
+        <div class="result-actions">
+          <button class="btn ghost" id="btn-hear" type="button">&#x1F50A; Hear it</button>
+          <button class="btn" id="btn-next" type="button">Next word &#x2192;</button>
+        </div>
+        <button class="link-btn" id="btn-result-home" type="button">Back to menu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARENT -->
+  <section id="screen-parent" class="screen" aria-label="Grown-ups">
+    <header class="game-top">
+      <button class="icon-btn" id="btn-parent-back" type="button" aria-label="Back">&#x2190;</button>
+      <span class="mode-label">Grown-ups</span>
+      <span></span>
+    </header>
+    <div class="parent-body">
+
+      <div class="panel">
+        <h3>Game settings</h3>
+        <div class="setting">
+          <span>Balloons (wrong guesses allowed)</span>
+          <div class="stepper">
+            <button type="button" data-step="-1" aria-label="Fewer">&minus;</button>
+            <output id="set-misses">6</output>
+            <button type="button" data-step="1" aria-label="More">+</button>
+          </div>
+        </div>
+        <label class="setting"><span>Include 2&ndash;3 letter words</span><input type="checkbox" id="set-short"></label>
+        <label class="setting"><span>Show letters in CAPITALS</span><input type="checkbox" id="set-caps"></label>
+        <label class="setting"><span>Sounds</span><input type="checkbox" id="set-sound"></label>
+        <label class="setting"><span>Say the word out loud after each round</span><input type="checkbox" id="set-speak"></label>
+        <label class="setting"><span>Spelling mode: say the word at the start</span><input type="checkbox" id="set-sayfirst"></label>
+      </div>
+
+      <div class="panel">
+        <h3>Word progress</h3>
+        <div class="filters">
+          <select id="prog-filter" aria-label="Which list"></select>
+          <select id="prog-sort" aria-label="Sort by">
+            <option value="missed">Most missed first</option>
+            <option value="alpha">A to Z</option>
+            <option value="played">Most played first</option>
+          </select>
+        </div>
+        <p class="hint">Tap R or W to mark a word as mastered for Reading or Writing.</p>
+        <div class="table-wrap"><table id="prog-table"></table></div>
+      </div>
+
+      <div class="panel">
+        <h3>Recent rounds</h3>
+        <div class="table-wrap"><table id="hist-table"></table></div>
+      </div>
+
+      <div class="panel">
+        <h3>Word list</h3>
+        <p id="list-summary"></p>
+        <p class="hint">Import a CSV with a <code>word</code> column (optional: <code>source_list</code>, <code>bonus_word</code>, <code>reading_mastered</code>, <code>writing_mastered</code>). Importing replaces the word list; Pippa's progress is kept.</p>
+        <div class="row">
+          <label class="btn ghost file-btn">Choose CSV file&hellip;<input type="file" id="csv-file" accept=".csv,text/csv,text/plain,text/comma-separated-values"></label>
+          <button class="btn ghost" id="btn-restore" type="button">Restore Pippa's Power Words</button>
+        </div>
+        <textarea id="csv-paste" rows="4" placeholder="&hellip;or paste CSV text here"></textarea>
+        <div class="row"><button class="btn ghost" id="btn-paste" type="button">Import pasted text</button></div>
+      </div>
+
+      <div class="panel">
+        <h3>Progress data</h3>
+        <div class="row">
+          <button class="btn ghost" id="btn-export" type="button">Show progress as CSV</button>
+          <button class="btn danger" id="btn-reset" type="button">Reset all progress</button>
+        </div>
+        <textarea id="export-out" rows="6" readonly hidden></textarea>
+      </div>
+      <p class="hint center">HangPeeps <span id="version"></span> &middot; works offline &middot; data stays on this device</p>
+    </div>
+  </section>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <p id="modal-msg"></p>
+      <input id="modal-input" inputmode="numeric" autocomplete="off" hidden>
+      <div class="row center" id="modal-btns"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</div>
+<script src="words.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

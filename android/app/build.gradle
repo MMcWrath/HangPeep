@@ -1,0 +1,55 @@
+plugins {
+    id 'com.android.application'
+}
+
+// The release APK is signed with hangpeeps-sideload.jks, which CI writes from the
+// HP_KEYSTORE_B64 secret (never committed; see README "Signing").
+// The same key must sign every build, or Android refuses to install an update over
+// the previous one — and uninstalling to get round that would erase Pippa's progress.
+def ks = file(System.getenv('HP_KEYSTORE') ?: 'hangpeeps-sideload.jks')
+
+android {
+    namespace 'ca.mikerochip.hangpeeps'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ca.mikerochip.hangpeeps'
+        minSdk 26
+        targetSdk 35
+        versionCode((project.findProperty('versionCode') ?: '1') as int)
+        versionName "1.0.${project.findProperty('versionCode') ?: '1'}"
+    }
+
+    signingConfigs {
+        sideload {
+            storeFile ks
+            storePassword System.getenv('HP_STORE_PASSWORD') ?: 'hangpeeps'
+            keyAlias System.getenv('HP_KEY_ALIAS') ?: 'hangpeeps'
+            keyPassword System.getenv('HP_KEY_PASSWORD') ?: 'hangpeeps'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.sideload
+        }
+    }
+
+    // The game itself lives in ../../web and is bundled as-is.
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../web']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
